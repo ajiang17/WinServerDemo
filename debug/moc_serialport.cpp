@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_SerialPort_t {
-    QByteArrayData data[10];
-    char stringdata0[83];
+    QByteArrayData data[9];
+    char stringdata0[74];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -39,13 +39,11 @@ QT_MOC_LITERAL(4, 28, 10), // "Failsignal"
 QT_MOC_LITERAL(5, 39, 8), // "protname"
 QT_MOC_LITERAL(6, 48, 11), // "SendDataSig"
 QT_MOC_LITERAL(7, 60, 8), // "QString&"
-QT_MOC_LITERAL(8, 69, 4), // "data"
-QT_MOC_LITERAL(9, 74, 8) // "ReadData"
+QT_MOC_LITERAL(8, 69, 4) // "data"
 
     },
     "SerialPort\0Readsignal\0\0temp\0Failsignal\0"
-    "protname\0SendDataSig\0QString&\0data\0"
-    "ReadData"
+    "protname\0SendDataSig\0QString&\0data"
 };
 #undef QT_MOC_LITERAL
 
@@ -55,7 +53,7 @@ static const uint qt_meta_data_SerialPort[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       4,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -63,20 +61,14 @@ static const uint qt_meta_data_SerialPort[] = {
        3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   34,    2, 0x06 /* Public */,
-       4,    1,   37,    2, 0x06 /* Public */,
-       6,    1,   40,    2, 0x06 /* Public */,
-
- // slots: name, argc, parameters, tag, flags
-       9,    0,   43,    2, 0x0a /* Public */,
+       1,    1,   29,    2, 0x06 /* Public */,
+       4,    1,   32,    2, 0x06 /* Public */,
+       6,    1,   35,    2, 0x06 /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QByteArray,    3,
     QMetaType::Void, QMetaType::QString,    5,
     QMetaType::Void, 0x80000000 | 7,    8,
-
- // slots: parameters
-    QMetaType::Void,
 
        0        // eod
 };
@@ -90,7 +82,6 @@ void SerialPort::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 0: _t->Readsignal((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
         case 1: _t->Failsignal((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 2: _t->SendDataSig((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 3: _t->ReadData(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -144,13 +135,13 @@ int SerialPort::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
+        _id -= 3;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 4)
+        if (_id < 3)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 4;
+        _id -= 3;
     }
     return _id;
 }

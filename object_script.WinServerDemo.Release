@@ -1,0 +1,17 @@
+INPUT(
+./release\main.o
+./release\mainwinserver.o
+./release\mytcprecvserver.o
+./release\printfeatures.o
+./release\scanserialportinfo.o
+./release\serialport.o
+./release\tcpclientsocket.o
+./release\tcpserver.o
+./release\moc_mainwinserver.o
+./release\moc_mytcprecvserver.o
+./release\moc_printfeatures.o
+./release\moc_scanserialportinfo.o
+./release\moc_serialport.o
+./release\moc_tcpclientsocket.o
+./release\moc_tcpserver.o
+);

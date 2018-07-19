@@ -44,7 +44,7 @@ void SerialPort::doReadData()
             break;
         }
 
-
+        emit Readsignal("temp");
         bool bsucc = m_serialport->waitForReadyRead(10000);
         if(!bsucc)
         {
@@ -90,14 +90,6 @@ void SerialPort::doReadData()
 }
 
 // 发送数据
-void SerialPort::doSendData(QSerialPort *port,QString data)
-{
-    if (data.isEmpty())
-    {
-        port->write("hello");
-    }
-}
-
 void SerialPort::doSendData(QString &data)
 {
     if (data.isEmpty())
@@ -116,6 +108,12 @@ void SerialPort::setFlage(bool flage)
     m_isStop = flage;
 }
 
+// 数据解析
+void SerialPort::AnalyticalData(QByteArray array)
+{
+    // 根据索引解析出数据源，打印数量，打印状态，打印机参数
+}
+
 QString SerialPort::GetPortName()
 {
     return m_portName;
@@ -128,31 +126,6 @@ bool SerialPort::GetIsOpen()
 }
 
 // 打开串口
-bool SerialPort::OpenSerial(QSerialPort *port)
-{
-    // 打开对应串口
-    if (port->open(QIODevice::ReadWrite))
-    {
-        // 设置串口相应信息：波特率--停止位--数据位--校验位--流控制
-        port->setBaudRate(QSerialPort::Baud115200);
-        port->setParity(QSerialPort::NoParity);
-        port->setStopBits(QSerialPort::OneStop);
-        port->setDataBits(QSerialPort::Data8);
-        port->setFlowControl(QSerialPort::NoFlowControl);
-        qDebug() << "串口" << port->portName() << QThread::currentThreadId();
-        //connect(m_port, SIGNAL(readyRead()), this, SLOT(ReadData()));
-        m_isOpen = true;
-        return true;
-    }
-    else
-    {
-        qDebug() << "串口" << port->portName() << "打开失败！";
-        m_isOpen = false;
-        return false;
-    }
-
-}
-
 bool SerialPort::OpenSerial()
 {
     // 打开对应串口
@@ -186,12 +159,8 @@ bool SerialPort::OpenSerial()
         }
 
         m_serialport->setReadBufferSize(1024);
-        //qDebug() << m_serialport->readBufferSize();
         qDebug() << "串口" << m_serialport->portName() << QThread::currentThreadId();
-        //qDebug() << m_serialport->error();
         m_serialport->clearError();
-        //connect(m_serialport, &QSerialPort::readyRead, this, &SerialPort::ReadData);
-        //QObject::connect(this, &SerialPort::SendDataSig, this, &SerialPort::doSendData);
         m_isOpen = true;
         return true;
     }
@@ -205,36 +174,11 @@ bool SerialPort::OpenSerial()
 }
 
 // 关闭串口
-void SerialPort::CloseSerial(QSerialPort *port)
+void SerialPort::CloseSerial()
 {
-    if (port->isOpen())
+    if (m_serialport->isOpen())
     {
-        port->close();
+        m_serialport->close();
     }
 }
 
-// 读取数据
-void SerialPort::ReadData()
-{
-    // 读取数据
-    QByteArray temp = m_serialport->readAll();
-    qDebug() << m_serialport->portName() << "子线程ID:" << QThread::currentThreadId();
-    m_serialport->waitForReadyRead(10000);
-    if (!temp.isEmpty())
-    {
-        qDebug() << temp;
-        QFile file("ReadData.txt");
-        if (file.open(QIODevice::Append))
-        {
-            qint64 LineLen = file.write(temp);
-            if (-1 == LineLen)
-            {
-               qDebug() << "write error!";
-            }
-            file.close();
-        }
-        // 数据解析
-        emit Readsignal(temp);
-        temp.clear();
-    }
-}

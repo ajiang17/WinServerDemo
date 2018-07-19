@@ -17,16 +17,18 @@ public:
     void InitSerialName(QString name);
 
     void doReadData(); // 读数据
-    void doSendData(QSerialPort *port,QString data); // 发送数据
     void doSendData(QString &data); // 发送数据
     void setFlage(bool flage = true);
+
+    void AnalyticalData(QByteArray array);  // 数据解析
+
 
     QString GetPortName(); // 获得串口名
     bool GetIsOpen();   // 获取是否已经打开串口
 
-    bool OpenSerial(QSerialPort *port);  // 打开串口
+    // 打开串口
     bool OpenSerial();
-    void CloseSerial(QSerialPort *port); // 关闭串口
+    void CloseSerial(); // 关闭串口
 
 public:
 
@@ -41,7 +43,6 @@ signals:
     void SendDataSig(QString &data);
 
 public slots:
-    void ReadData();  // 读取数据
 
 private:
 

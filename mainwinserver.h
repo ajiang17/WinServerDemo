@@ -2,14 +2,21 @@
 #define MAINWINSERVER_H
 
 #include <QMainWindow>
+
 #include "serialport.h"
 #include "scanserialportinfo.h"
 #include "printfeatures.h"
+#include "tcpserver.h"
+
 #include <QTimer>
 #include <QList>
 #include <QMutex>
 #include <QMap>
-
+#include <QTcpSocket>
+#include <qtcpsocket.h>
+#include <QHostAddress>
+#include "mytcprecvserver.h"
+#include <qsystemtrayicon.h>
 #define MAXTHREADNUM 20  // 最大监控20个串口
 
 
@@ -36,6 +43,12 @@ public:
     void CloseThread(); // 关闭所有线程
     void StopThread(QString protname); // 停止线程
 
+    void TCPIPInit();               //初始化
+    void TCPIPConnection();         //TCP/IP连接
+    void SetAppIcon();              //设置APP的ICON
+    void SettrayIcon();             //这只通知ICON
+    void iconActivated(QSystemTrayIcon::ActivationReason);
+
 protected:
 
     QList<QThread *> m_IdleThreadPool; // 空闲线程
@@ -47,6 +60,10 @@ signals:
     void UpdateSerial(QStringList AddThreadList, QStringList SubThreadList);  // 更新串口列表
 private slots:
     void timerScanSerial(); // 扫描串口
+    void sendtoPrinterMessage();     //TCP/IP通讯发送函数
+    void readMessage();
+    void slotconnectedsuccess();
+    void displayError(QAbstractSocket::SocketError);
 private:
     Ui::MainWinServer *ui;
     QTimer *m_timer;     // 启动定时
@@ -55,6 +72,16 @@ private:
     QThread * SurveillanceThread;  // 监视线程
     int m_printNum;   // 打印数量
     PrintFeatures *printer; // 打印功能实例
+    QTcpSocket *tcpSocket;  //tcp服务Soecket
+    QHostAddress *serverIP;
+    QString message;  //存放从服务器接收到的字符串
+    quint16 blockSize;  //存放文件的大小信息
+    TcpServer *server;
+    //Mytcprecvserver *server;
+    QString StrSentToPrinter;
+
+protected slots:
+    void slotupdateserver(QString, int);
 };
 
 #endif // MAINWINSERVER_H

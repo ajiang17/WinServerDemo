@@ -14,6 +14,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QStatusBar>
@@ -26,6 +27,7 @@ class Ui_MainWinServer
 {
 public:
     QWidget *centralWidget;
+    QLabel *PictureLable;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -34,13 +36,17 @@ public:
     {
         if (MainWinServer->objectName().isEmpty())
             MainWinServer->setObjectName(QStringLiteral("MainWinServer"));
-        MainWinServer->resize(239, 115);
+        MainWinServer->resize(552, 420);
         centralWidget = new QWidget(MainWinServer);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
+        PictureLable = new QLabel(centralWidget);
+        PictureLable->setObjectName(QStringLiteral("PictureLable"));
+        PictureLable->setGeometry(QRect(80, 110, 91, 71));
+        PictureLable->setMinimumSize(QSize(91, 0));
         MainWinServer->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWinServer);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 239, 23));
+        menuBar->setGeometry(QRect(0, 0, 552, 23));
         MainWinServer->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWinServer);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -57,6 +63,7 @@ public:
     void retranslateUi(QMainWindow *MainWinServer)
     {
         MainWinServer->setWindowTitle(QApplication::translate("MainWinServer", "MainWinServer", Q_NULLPTR));
+        PictureLable->setText(QApplication::translate("MainWinServer", "TextLabel", Q_NULLPTR));
     } // retranslateUi
 
 };

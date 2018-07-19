@@ -1,0 +1,17 @@
+INPUT(
+./debug\main.o
+./debug\mainwinserver.o
+./debug\mytcprecvserver.o
+./debug\printfeatures.o
+./debug\scanserialportinfo.o
+./debug\serialport.o
+./debug\tcpclientsocket.o
+./debug\tcpserver.o
+./debug\moc_mainwinserver.o
+./debug\moc_mytcprecvserver.o
+./debug\moc_printfeatures.o
+./debug\moc_scanserialportinfo.o
+./debug\moc_serialport.o
+./debug\moc_tcpclientsocket.o
+./debug\moc_tcpserver.o
+);

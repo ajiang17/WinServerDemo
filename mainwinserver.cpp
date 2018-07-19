@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QSettings>
 #include <QDir>
+#include <QNetworkProxyFactory>
 
 
 MainWinServer::MainWinServer(QWidget *parent) :
@@ -10,31 +11,44 @@ MainWinServer::MainWinServer(QWidget *parent) :
     ui(new Ui::MainWinServer),
     m_printNum(0)
 {
-    ui->setupUi(this);
-   // Readregedit(true); // 开机启动
-    m_IdleThreadPool.clear();
-    m_SerailThreadMap.clear();
+//    ui->setupUi(this);
+    Readregedit(true); // 开机启动
+    //SetAppIcon();
+    //SettrayIcon();
 
-    InitThreadPools(); // 初始化线程池  
-    qDebug() << "主线程ID:" << QThread::currentThreadId();  //显示当前线程的数值
-    RunThread();
+//    m_IdleThreadPool.clear();
+//    m_SerailThreadMap.clear();
 
-    m_timer = new QTimer(this);
-    connect(m_timer,SIGNAL(timeout()),this,SLOT(timerScanSerial()));
-    m_timer->start(3000);  // 3秒扫描一次串口信息
+//    InitThreadPools(); // 初始化线程池
+//    qDebug() << "主线程ID:" << QThread::currentThreadId();  //显示当前线程的数值
+//    RunThread();
 
-    // 更新状态并重新打开连接
-    connect(this, &MainWinServer::UpdateSerial, this, &MainWinServer::UpSerialThread);
+//    m_timer = new QTimer(this);
+//    connect(m_timer,SIGNAL(timeout()),this,SLOT(timerScanSerial()));
+//    m_timer->start(3000);  // 3秒扫描一次串口信息
 
+//    // 更新状态并重新打开连接
+//    connect(this, &MainWinServer::UpdateSerial, this, &MainWinServer::UpSerialThread);
+    TCPIPInit();
+    TCPIPConnection();
+    server = new TcpServer(this,8888);
+    connect(server,&TcpServer::updateMsgx,this,&MainWinServer::slotupdateserver);
+    connect(server,&TcpServer::updateMsgx,this,&MainWinServer::sendtoPrinterMessage);
+}
+void MainWinServer::slotupdateserver(QString msg, int length)
+{
+    qDebug()<<"eeeeeeeeeeeeeeee"<<msg;
+    StrSentToPrinter = "";
+    StrSentToPrinter = msg;
 }
 
 MainWinServer::~MainWinServer()
 {
-    m_timer->stop();
-    CloseThread();
+    //m_timer->stop();
+    //CloseThread();
 
 
-    delete m_timer;
+    //delete m_timer;
     delete ui;
 }
 
@@ -58,6 +72,7 @@ void MainWinServer::Readregedit(bool isAutoRun)
     delete reg;
 }
 
+// 打印功能，里面实现实时发送剩余打印数量
 void MainWinServer::doPrint(QByteArray temp)
 {
     m_mutex.lock();
@@ -277,4 +292,97 @@ void MainWinServer::timerScanSerial()
 
     delete serialinfo;
     emit UpdateSerial(AddThreadList, SubThreadList);
+}
+
+void MainWinServer::TCPIPInit()
+{
+    QNetworkProxyFactory::setUseSystemConfiguration(false);
+    tcpSocket = new QTcpSocket(this);
+    serverIP = new QHostAddress();
+
+    connect(tcpSocket,&QTcpSocket::readyRead,this,MainWinServer::readMessage);
+    connect(tcpSocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(displayError(QAbstractSocket::SocketError)));
+}
+
+
+void MainWinServer::TCPIPConnection()
+{
+
+    blockSize = 0;
+    //tcpSocket->abort();//取消已有的连接
+    QString strServIPAddr = "192.168.1.137";
+    if(!serverIP->setAddress(strServIPAddr))
+    {
+        qDebug()<<"your server IP Adrress is Error";
+    }
+    tcpSocket->connectToHost(strServIPAddr,9100);
+    connect(tcpSocket,&QTcpSocket::connected,this,&MainWinServer::slotconnectedsuccess);
+}
+
+void MainWinServer::readMessage()
+{
+    QDataStream in(tcpSocket);
+    QByteArray array = tcpSocket->readAll();
+    qDebug()<<array;
+    //in.setVersion(QDataStream::Qt_4_6);
+}
+
+void MainWinServer::slotconnectedsuccess()
+{
+    qDebug()<<"Connect Success with printer!!";
+    //StrSentToPrinter
+    QString msg = "^XA\n^MD23\n^PW200\n^FO30,30\n^BQN,2,6\n^FDD03048F,LM,N0123456789,A12AABB,B0006qrcodeFS\n^XZ";
+    //qDebug()<<msg;
+    //tcpSocket->write(msg.toUtf8().data());
+}
+
+
+void MainWinServer::displayError(QAbstractSocket::SocketError)
+{
+    qDebug() << tcpSocket->errorString(); //输出错误信息
+}
+
+void MainWinServer::sendtoPrinterMessage()
+{
+
+    QString msg = "^XA\n^MD23\n~TA100\n^FO50,50\n^A0,10,10\n^FDZEBRA^FS\n^FO70,50\n^BQN,2,6\n^FDMM,A"+StrSentToPrinter +"^PLa255\n^FS\n^XZ";
+    QString msg1;
+    msg1.append("^XA\n");
+    msg1.append("^MD23\n");
+    msg1.append("^LH60,10\n");
+    msg1.append("^FO50,50\n");
+    msg1.append("^BQN,2,6\n");
+    msg1.append("^FDMM,A");
+    msg1.append(StrSentToPrinter);
+    msg1.append("^FS\n");
+    msg1.append("^XZ");
+    qDebug()<<"---------------------------------------" + msg;
+    qDebug()<<"---------------------------------------" + msg1;
+    tcpSocket->write(msg1.toUtf8().data());
+}
+//111111111111111111111111111111111111
+void MainWinServer::SetAppIcon()
+{
+    setWindowIcon(QIcon("logo.png"));
+}
+void MainWinServer::SettrayIcon()
+{
+    QSystemTrayIcon *trayIcon= new QSystemTrayIcon(this);
+    trayIcon->setIcon(QIcon("logo.png"));
+    connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason )),this,SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+    trayIcon->show();
+}
+void MainWinServer::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    qDebug()<<"---------------------";
+    switch(reason)
+    {
+        case QSystemTrayIcon::DoubleClick :
+           setWindowState(Qt::WindowActive);
+           //w.show();
+           activateWindow();
+           break;
+        default:
+           break;
+    }
 }
